@@ -10,6 +10,7 @@ use solana_sdk::{
     signer::{keypair::Keypair, Signer},
     system_instruction,
     transaction::Transaction,
+    commitment_config::CommitmentConfig,
 };
 use spl_token::state::Mint;
 
@@ -97,9 +98,9 @@ pub fn create_mint(
 
 /// Check if `account` is empty.
 pub fn is_account_empty(client: &RpcClient, account: &Pubkey) -> Result<bool, error::Error> {
-    let account = client.get_account(account)?;
-
-    Ok(account.data.is_empty())
+    let commitment_config = CommitmentConfig::processed();
+    let account = client.get_account_with_commitment(account, commitment_config)?;
+    Ok(account.value.is_none())
 }
 
 /// Mint new tokens.
